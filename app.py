@@ -4,7 +4,7 @@ import os
 from models import db, Cotizacion  # Agregado
 from utils import calcular_total  # Solo usamos calcular_total
 
-app = Flask(__name__)
+app = Flask(__name__) 
 app.secret_key = "limtap-secreto"
 
 # Configuración de la base de datos (Render la proporciona como variable de entorno)
