@@ -8,7 +8,8 @@ app = Flask(__name__)
 app.secret_key = "limtap-secreto"
 
 # Configuración de la base de datos (Render la proporciona como variable de entorno)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI
+")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar la base de datos
