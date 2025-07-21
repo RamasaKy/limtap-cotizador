@@ -57,7 +57,7 @@ def index():
     return render_template("index.html", objetos=objetos, descuentos=descuentos, total=total)
 
 # 🔹 Nueva ruta: historial
-@app.route("/historial")
+@app.route("historial")
 def historial():
     cotizaciones = Cotizacion.query.order_by(Cotizacion.fecha.desc()).all()
     return render_template("historial.html", cotizaciones=cotizaciones)
