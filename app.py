@@ -1,18 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
 import os
-from models import db, Cotizacion  # Importamos SQLAlchemy y el modelo
+from models import db, Cotizacion  # Agregado
+from utils import calcular_total  # Solo usamos calcular_total
 
 app = Flask(__name__)
 app.secret_key = "limtap-secreto"
 
-# Configuración de base de datos (Render la envía como variable de entorno)
+# Configuración de la base de datos (Render la proporciona como variable de entorno)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Inicializar la base de datos
 db.init_app(app)
 
-# Crea las tablas si no existen
 with app.app_context():
     db.create_all()
 
@@ -34,11 +35,9 @@ def index():
 
         try:
             cantidad = int(cantidad)
-            # Calcula el total
-            from utils import calcular_total
             total = calcular_total(cantidad, objeto, descuento if descuento != "ninguno" else None)
 
-            # Guarda en la base de datos
+            # Guardar en la base de datos
             nueva_cotizacion = Cotizacion(
                 cliente=cliente,
                 objeto=objeto,
@@ -56,6 +55,8 @@ def index():
             return redirect(url_for("index"))
 
     return render_template("index.html", objetos=objetos, descuentos=descuentos, total=total)
+
+# 🔹 Nueva ruta: historial
 @app.route("/historial")
 def historial():
     cotizaciones = Cotizacion.query.order_by(Cotizacion.fecha.desc()).all()
@@ -63,5 +64,3 @@ def historial():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
