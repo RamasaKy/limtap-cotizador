@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>LIMTAP - Cotizador Web</title>
+  {% if total %}
+  <script>
+    // Mostrar cotización si se envió
+    alert("✅ Total de la cotización: ${{ '{:,.0f}'.format(total) }} COP");
+  </script>
+  {% endif %}
+</head>
+<body>
+  <h2>🧼 Cotizador LIMTAP</h2>
+
+  <form method="POST">
+    <label>Nombre del cliente:</label><br>
+    <input type="text" name="cliente" required><br><br>
+
+    <label>Objeto a limpiar:</label><br>
+    <select name="objeto" required>
+      {% for obj in objetos %}
+        <option value="{{ obj }}">{{ obj.capitalize() }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Cantidad:</label><br>
+    <input type="number" name="cantidad" min="1" required><br><br>
+
+    <label>Descuento:</label><br>
+    <select name="descuento">
+      {% for d in descuentos %}
+        <option value="{{ d }}">{{ d.replace('_', ' ').capitalize() }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Generar Cotización</button>
+  </form>
+</body>
+</html>
