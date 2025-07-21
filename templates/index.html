@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LIMTAP - Cotizador Web</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
   {% if total %}
   <script>
-    // Mostrar cotización si se envió
     alert("✅ Total de la cotización: ${{ '{:,.0f}'.format(total) }} COP");
   </script>
   {% endif %}
