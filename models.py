@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -9,4 +10,4 @@ class Cotizacion(db.Model):
     cantidad = db.Column(db.Integer, nullable=False)
     descuento = db.Column(db.String(50))
     total = db.Column(db.Integer, nullable=False)
-    fecha = db.Column(db.DateTime, nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.now)
