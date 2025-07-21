@@ -56,6 +56,10 @@ def index():
             return redirect(url_for("index"))
 
     return render_template("index.html", objetos=objetos, descuentos=descuentos, total=total)
+@app.route("/historial")
+def historial():
+    cotizaciones = Cotizacion.query.order_by(Cotizacion.fecha.desc()).all()
+    return render_template("historial.html", cotizaciones=cotizaciones)
 
 if __name__ == "__main__":
     app.run(debug=True)
