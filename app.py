@@ -1,21 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
+import csv
 import os
-from models import db, Cotizacion  # Agregado
-from utils import calcular_total  # Solo usamos calcular_total
+from utils import calcular_total
 
-app = Flask(__name__) 
+app = Flask(__name__)
 app.secret_key = "limtap-secreto"
 
-# Configuración de la base de datos (Render la proporciona como variable de entorno)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Inicializar la base de datos
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
+CSV_FILE = "cotizaciones.csv"
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -37,17 +29,10 @@ def index():
             cantidad = int(cantidad)
             total = calcular_total(cantidad, objeto, descuento if descuento != "ninguno" else None)
 
-            # Guardar en la base de datos
-            nueva_cotizacion = Cotizacion(
-                cliente=cliente,
-                objeto=objeto,
-                cantidad=cantidad,
-                descuento=descuento,
-                total=total,
-                fecha=datetime.now()
-            )
-            db.session.add(nueva_cotizacion)
-            db.session.commit()
+            # Guardar en CSV
+            with open(CSV_FILE, mode='a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow([datetime.now().strftime('%Y-%m-%d %H:%M'), cliente, objeto, cantidad, descuento, total])
 
             return render_template("index.html", objetos=objetos, descuentos=descuentos, total=total)
         except ValueError:
@@ -56,10 +41,21 @@ def index():
 
     return render_template("index.html", objetos=objetos, descuentos=descuentos, total=total)
 
-# 🔹 Nueva ruta: historial
 @app.route("/historial")
 def historial():
-    cotizaciones = Cotizacion.query.order_by(Cotizacion.fecha.desc()).all()
+    cotizaciones = []
+    if os.path.exists(CSV_FILE):
+        with open(CSV_FILE, newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                cotizaciones.append({
+                    "fecha": row[0],
+                    "cliente": row[1],
+                    "objeto": row[2],
+                    "cantidad": row[3],
+                    "descuento": row[4],
+                    "total": row[5]
+                })
     return render_template("historial.html", cotizaciones=cotizaciones)
 
 if __name__ == "__main__":
